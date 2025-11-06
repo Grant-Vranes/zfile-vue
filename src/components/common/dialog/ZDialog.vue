@@ -10,7 +10,12 @@
     >
       <template #header>
         <div class="z-dialog-title">
-         {{ title }}
+          <template v-if="slots.header">
+            <slot name="header"></slot>
+          </template>
+          <template v-else>
+            {{ title }}
+          </template>
         </div>
         <div class="z-dialog-title-btns">
           <el-icon v-if="isFullScreenBtn" @click="handleFullscreen"><ArrowsPointingOutIcon /></el-icon>
