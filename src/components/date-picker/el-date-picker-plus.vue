@@ -1,7 +1,6 @@
 <template>
 	<el-date-picker v-bind="$attrs"
 					v-model="dataRange"
-					@update:modelValue="onInput"
 					v-if="isNotMobile"
 					type="daterange"
 					:defaultTime="defaultTime"
@@ -66,12 +65,13 @@ const props = defineProps({
 	}
 });
 
-const dataRange = ref(props.modelValue);
-
 const emit = defineEmits(['update:modelValue']);
-const onInput = (value) => {
-	emit("update:modelValue", value);
-};
+const dataRange = computed({
+	get: () => props.modelValue,
+	set: (value) => {
+		emit("update:modelValue", value);
+	}
+});
 
 const disableStartDate = (time) => {
 	let endDate = props.modelValue[1];
