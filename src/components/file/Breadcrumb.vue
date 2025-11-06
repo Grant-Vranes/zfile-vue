@@ -63,10 +63,6 @@
 import { ChevronRightIcon } from '@heroicons/vue/24/solid'
 import { useResizeObserver } from '@vueuse/core'
 
-let route = useRoute();
-console.log(route);
-
-
 // 组件接收的参数
 let props = defineProps({
   items: {
@@ -84,7 +80,7 @@ watch(() => props.items, () => {
   props.items.forEach((item, index) => {
     item.index = index;
   })
-})
+}, { immediate: true })
 
 // 组件回调的事件
 // 定义一个面包屑点击事件，允许外部调用
