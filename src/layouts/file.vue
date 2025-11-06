@@ -89,7 +89,6 @@ const loadGlobalSiteSetting = () => {
 	.el-header {
 		--el-header-height: unset;
 		height: 48px;
-		line-height: 48px !important;
 	}
 
 	// 去除文件区 padding
