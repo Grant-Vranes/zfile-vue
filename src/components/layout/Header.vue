@@ -230,6 +230,7 @@ const clickBreadcrumb = (item) => {
 watch(() => route.params.storageKey, (value) => {
     if (value === undefined) {
         currentStorageKey.value = "";
+		fileDataStore.imgMode = false;
     }
 });
 
