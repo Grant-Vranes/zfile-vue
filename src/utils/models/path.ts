@@ -105,3 +105,13 @@ export function buildKkFileViewUrl(file: any, kkFileViewUrl: string) {
 	// 5. 返回最终 URL
 	return `${kkFileViewUrl}/onlinePreview?url=${finalEncodedUrl}`;
 }
+
+// 构建分享基础路径 /share/{shareKey}
+export const buildShareBasePath = (shareKey: string): string => {
+  if (!shareKey) return '/share';
+  try {
+    return `/share/${encodeURIComponent(shareKey)}`;
+  } catch (e) {
+    return `/share/${shareKey}`;
+  }
+}

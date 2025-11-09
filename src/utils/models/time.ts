@@ -109,5 +109,24 @@ export const shortcuts: Shortcut[] = [
 	},
 ];
 
+const pad2 = (n: number) => (n < 10 ? '0' + n : '' + n);
+
+export const formatLocalDateTime = (date: Date) => {
+	if (!date) return null;
+	const d = new Date(date);
+	const yyyy = d.getFullYear();
+	const MM = pad2(d.getMonth() + 1);
+	const dd = pad2(d.getDate());
+	const HH = pad2(d.getHours());
+	const mm = pad2(d.getMinutes());
+	const ss = pad2(d.getSeconds());
+	return `${yyyy}-${MM}-${dd} ${HH}:${mm}:${ss}`;
+};
+
+// 禁用过去的日期
+export const disablePastDates = (time: Date) => {
+	return time.getTime() < Date.now();
+};
+
 export const defaultTime = reactive([new Date(0, 0, 0, 0, 0, 0), new Date(0, 0, 0, 23, 59, 59)]);
 export const dateValueFormat = 'YYYY-MM-DD HH:mm:ss';
