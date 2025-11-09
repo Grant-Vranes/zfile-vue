@@ -72,7 +72,12 @@
 
 			<el-row class="md:space-y-6" v-if="selectFiles.length === 1 && data">
 				<div class="flex flex-row space-x-10 w-full">
-					<el-image ref="qrcodeRef" class="w-3/4" :src="data.currentImg"/>
+					<QrCodePreview
+						class="w-3/4 max-w-xs"
+						:src="data.currentImg"
+						:alt="data.currentImg ? '文件二维码' : ''"
+						:filename="`${data?.name || 'link'}-qrcode.png`"
+					/>
 					<div class="flex flex-col mt-3 space-y-3.5 overflow-y-auto">
 						<div class="border w-10 h-10 p-1 rounded-md cursor-pointer"
 						     @click="data.currentImg = data.qrcode.a1"
@@ -141,6 +146,8 @@
 </template>
 
 <script setup>
+import QrCodePreview from "~/components/common/QrCodePreview.vue";
+
 import { currentPageHeight } from "~/utils";
 import { CalendarIcon, CircleStackIcon, LinkIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
 
@@ -153,9 +160,6 @@ const props = defineProps({
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
-
-let router = useRouter();
-let route = useRoute();
 
 import useFileSelect from "~/composables/file/useFileSelect";
 let { selectFiles } = useFileSelect();

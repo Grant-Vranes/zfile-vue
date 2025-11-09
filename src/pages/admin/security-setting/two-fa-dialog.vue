@@ -8,7 +8,13 @@
 	           width="30%">
 		<div class="text-center">
 			<div>可使用双因素认证软件扫描下方二维码或复制下方密钥到软件中添加。</div>
-			<el-image class="block my-4" @click="load2FAInfo" :src="twoFAData?.svg" :alt="twoFAData?.qrcode" />
+			<QrCodePreview
+				class="block my-4 mx-auto w-56 h-56"
+				@click="load2FAInfo"
+				:src="twoFAData?.svg"
+				:alt="twoFAData?.qrcode"
+				filename="two-fa-qrcode.png"
+			/>
 			<div @click="copyTwoFASecret" class="text-gray-300 mb-4">{{ twoFAData.secret }}</div>
 			<div class="flex justify-between space-x-2">
 				<el-input v-model="twoFAData.code" placeholder="请绑定双因素认证软件后，输入显示的验证码。"/>
@@ -19,6 +25,8 @@
 </template>
 
 <script setup>
+import QrCodePreview from "~/components/common/QrCodePreview.vue";
+
 import { rendererRect } from 'beautify-qrcode';
 import { generator2FAInfoReq, verify2FAInfoReq } from "~/api/admin/admin-2fa";
 import { toClipboard } from "@soerenmartius/vue3-clipboard";
