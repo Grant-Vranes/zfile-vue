@@ -307,7 +307,10 @@ const submitForm = () => {
     if (checked) {
       loading.value = true;
       saveStorageSettingReq(storageItem.value).then((res) => {
-
+				let saveId = res.data;
+				if (!isEditMode.value) {
+					router.replace(`/admin/storage-edit/${saveId}`);
+				}
         let saveMsg = '保存成功, 是否前往用户管理配置权限（不配置将无法访问该存储源）？';
 
         isEditMode.value = true;
