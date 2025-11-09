@@ -60,6 +60,7 @@
 		<div
 			v-else
 			:class="'zfile-index-table-' + (isMobile ? storageConfigStore.globalConfig?.mobileLayout : storageConfigStore.globalConfig?.layout)"
+			ref="fileIndexBodyRef"
 			@contextmenu="showFileMenu"
 		>
 			<table-file-view :share-mode="true" class="z-file-view" v-if="zfileSettingCache.view.type === 'table'"/>
@@ -112,6 +113,9 @@ let globalConfigStore = useGlobalConfigStore();
 // 右键菜单相关
 import useFileContextMenu from "~/composables/file/useFileContextMenu";
 const { showFileMenu } = useFileContextMenu();
+const fileIndexBodyRef = ref();
+import useFileLongPressEvent from "~/composables/file/useFileLongPressEvent";
+useFileLongPressEvent(fileIndexBodyRef);
 
 // 文件数据相关
 import useSetting from "~/composables/header/useSetting";
