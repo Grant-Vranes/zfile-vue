@@ -53,28 +53,36 @@ export default function useFileOperator() {
             row = selectRows.value[0];
         }
 
-        ElMessageBox.confirm(confirmMsg, '提示', {
-            dangerouslyUseHTMLString: true,
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'info',
-            callback: (val) => {
-                let action = '';
-                if (val instanceof Object) {
-                    action = val.action;
-                } else if (typeof val === 'string') {
-                    action = val;
-                }
 
-                if (action === 'confirm') {
-                    // 单个文件下载, 直接下载
-                    if (row?.name) {
-                        console.log('进行指定文件下载, 文件:', row);
-                        downloadFileUseWindowOpenMode(row.url)
-                    }
-                }
-            }
-        })
+			function performDownload() {
+				// 单个文件下载, 直接下载
+				if (row?.name) {
+					console.log("进行指定文件下载, 文件:", row);
+					downloadFileUseWindowOpenMode(row.url);
+				}
+			}
+			if (storageConfigStore.globalConfig.enableNormalDownloadConfirm) {
+				ElMessageBox.confirm(confirmMsg, '提示', {
+					dangerouslyUseHTMLString: true,
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'info',
+					callback: (val) => {
+						let action = '';
+						if (val instanceof Object) {
+							action = val.action;
+						} else if (typeof val === 'string') {
+							action = val;
+						}
+
+						if (action === 'confirm') {
+							performDownload();
+						}
+					}
+				})
+			} else {
+				performDownload();
+			}
     }
 
     /**
@@ -84,22 +92,6 @@ export default function useFileOperator() {
      */
     const downloadFileUseWindowOpenMode = (url) => {
         window.open(url);
-    }
-
-    /**
-     * 使用 iframe 模式下载文件
-     *
-     * @param url   下载文件 url
-     */
-    const downloadFileUseIframeMode = (url) => {
-        const iframe = document.createElement("iframe");
-        iframe.style.display = "none";  // 防止影响页面
-        iframe.style.height = 0;  // 防止影响页面
-        iframe.src = url;
-        document.body.appendChild(iframe);
-        setTimeout(()=>{
-            iframe.remove();
-        }, 5 * 60 * 1000);
     }
 
     // 新建文件夹

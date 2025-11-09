@@ -39,8 +39,9 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
         defaultSortField: 'name',
         defaultSortOrder: 'asc',
         linkExpireTimes: '',
-        forceBackendAddress: ''
-      },
+        forceBackendAddress: '',
+				enableNormalDownloadConfirm: true,
+			},
       loginInfo: {
         isLogin: null,
         isAdmin: null,

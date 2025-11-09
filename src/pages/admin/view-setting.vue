@@ -43,6 +43,13 @@
 						<el-switch v-model="siteSetting.defaultSavePwd" />
 					</el-form-item>
 
+					<el-form-item label="普通下载确认弹窗">
+						<el-switch v-model="siteSetting.enableNormalDownloadConfirm" />
+						<div class="el-form-item-tips">
+							关闭后单个文件点击下载会立即开始，无需确认。
+						</div>
+					</el-form-item>
+
 					<el-form-item label="文件操作习惯">
 						<el-radio v-model="siteSetting.fileClickMode" value="click">单击进入</el-radio>
 						<el-radio v-model="siteSetting.fileClickMode" value="dbclick">双击进入</el-radio>
@@ -348,6 +355,9 @@ watch(() => siteSetting.value, (val, oldVal) => {
     }  if (!siteSetting.value.customKkFileViewSuffix) {
       siteSetting.value.customKkFileViewSuffix = constant.fileTypeMap.kkfileview.join(',');
     }
+		if (siteSetting.value.enableNormalDownloadConfirm === undefined || siteSetting.value.enableNormalDownloadConfirm === null) {
+			siteSetting.value.enableNormalDownloadConfirm = true;
+		}
   }
 });
 
