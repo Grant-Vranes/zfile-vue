@@ -215,9 +215,14 @@ const settings = ref([
   { id: 2, name: '登录日志', href: '/admin/login-log', icon: DocumentTextIcon },
   { id: 4, name: '系统日志下载', href: '#', icon: DocumentArrowDownIcon, onClick: logDownload },
   { id: 5, name: '注销登录', href: '#', icon: ArrowLeftOnRectangleIcon, onClick: () => {
-      logoutReq().then(res => {
-        router.push('/login');
-      })
+			logoutReq().then(res => {
+				router.push('/login');
+				if (siteSetting.value.secureLoginEntry) {
+					router.push('/login/' + siteSetting.value.secureLoginEntry);
+				} else {
+					router.push('/login');
+				}
+			})
     }
   }
 ])

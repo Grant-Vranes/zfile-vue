@@ -91,13 +91,14 @@
 </template>
 
 <script setup>
-import { checkLoginReq, loginReq, loginVerifyImgReq, loginVerifyModeReq } from "~/api/home/user";
+import { checkLoginReq, loginReq, loginVerifyImgReq, loginVerifyModeReq, validateLoginEntryReq } from "~/api/home/user";
 import { loadSsoLoginListReq } from "~/api/home/login";
 
 import { CheckBadgeIcon, QuestionMarkCircleIcon } from "@heroicons/vue/24/solid";
 import { PhotoIcon, UserIcon, KeyIcon, CheckIcon } from "@heroicons/vue/24/outline";
 import { installStatusReq } from "~/api/home/install";
 
+let route = useRoute();
 let router = useRouter();
 let loading = ref(false);
 
@@ -113,6 +114,24 @@ const rememberStorage = useStorage('zfile-login-storage', {
 const remember = ref(rememberStorage.value.remember);
 
 let loginFormRef = ref();
+
+const loginEntry = ref("");
+
+const refreshLoginEntry = () => {
+	const entryParam = route.params.entry;
+	loginEntry.value = typeof entryParam === "string" ? entryParam.trim() : "";
+};
+
+const validateCurrentLoginEntry = async () => {
+	refreshLoginEntry();
+	try {
+		await validateLoginEntryReq(loginEntry.value);
+		return true;
+	} catch (error) {
+		router.replace("/");
+		return false;
+	}
+};
 
 let formData = ref({
   username: rememberStorage.value.username,
@@ -136,7 +155,7 @@ const submitForm = () => {
 	loginFormRef.value.validate((checked) => {
 		if (checked) {
 			loading.value = true;
-			loginReq(formData.value).then((response) => {
+			loginReq(formData.value, loginEntry.value).then((response) => {
 				let token = response.data.token;
 				let isAdmin = response.data.admin;
 
@@ -198,7 +217,11 @@ const loadLoginVerifyCodeImgData = () => {
 
 
 const ssoList = ref([])
-onMounted(() => {
+onMounted(async () => {
+	const valid = await validateCurrentLoginEntry();
+	if (!valid) {
+		return;
+	}
 	installStatusReq().then((response) => {
 		if (!response.data) {
 			router.push("/install");

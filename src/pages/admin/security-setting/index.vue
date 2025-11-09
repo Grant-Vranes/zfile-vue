@@ -1,5 +1,6 @@
 <template>
   <el-form :model="siteSetting"
+           :rules="formRules"
            v-if="siteSetting"
            :label-width="globalConfigStore.adminForm.labelWidth"
            :label-position="globalConfigStore.adminForm.labelPosition"
@@ -7,12 +8,21 @@
            scroll-to-error
            status-icon
            class="z-admin-form"
+           ref="formRef"
            v-loading="saveLoading">
 
     <admin-form-header title="安全设置" sub-title="此处设置可保护您的站点安全" />
 
+		<el-form-item label="登录安全入口" prop="secureLoginEntry">
+			<el-input v-model.trim="siteSetting.secureLoginEntry"></el-input>
+			<div class="el-form-item-tips">
+				<div>当前登录入口为 <span class="text-blue-400 select-all">{{currentLoginEntry}}</span></div>
+				<div>此功能可保护站点登录入口不被恶意扫描，建议启用。</div>
+			</div>
+		</el-form-item>
+
     <el-form-item label="是否显示登录入口">
-      <el-switch v-model="siteSetting.showLogin"></el-switch>
+      <el-switch v-model="siteSetting.showLogin" :disabled="disableShowLogin"></el-switch>
       <div class="el-form-item-tips">
         启用后，会在首页上方工具栏显示后台登录入口，请根据自身情况选择是否启用。(这里只是控制是否显示，直接访问登录页 URL: <span class="text-blue-400">{{currentLocale}}/login</span> 也能访问)
       </div>
@@ -78,7 +88,50 @@ const globalConfigStore = useGlobalConfigStore();
 
 import useAdminSetting from "~/composables/admin/useAdminSetting";
 import TwoFaDialog from "~/pages/admin/security-setting/two-fa-dialog.vue";
-const { siteSetting, saveData, saveLoading } = useAdminSetting(updateSecuritySettingReq);
+
+const formRef = ref();
+const formRules = {
+	secureLoginEntry: [
+		{
+			validator: (_, value, callback) => {
+				if (!value) {
+					callback();
+					return;
+				}
+				const trimmedValue = value.trim();
+				if (!/^[A-Za-z0-9_-]+$/.test(trimmedValue)) {
+					callback(new Error("安全登录入口只能包含字母、数字、短横线和下划线"));
+					return;
+				}
+				if (trimmedValue.length > 32) {
+					callback(new Error("安全登录入口长度不能超过 32 个字符"));
+					return;
+				}
+				callback();
+			},
+			trigger: ["change", "blur"]
+		}
+	]
+};
+const { siteSetting, saveData, saveLoading } = useAdminSetting(updateSecuritySettingReq, formRef);
+
+watch(() => siteSetting.value?.secureLoginEntry, (newVal) => {
+	if (newVal && siteSetting.value.showLogin) {
+		siteSetting.value.showLogin = false;
+	}
+});
+
+const disableShowLogin = computed(() => {
+	return !!siteSetting.value.secureLoginEntry;
+});
+
+const currentLoginEntry = computed(() => {
+	if (siteSetting.value.secureLoginEntry) {
+		return currentLocale.value + `/login/${siteSetting.value.secureLoginEntry}`;
+	} else {
+		return currentLocale.value + '/login';
+	}
+});
 
 // 绑定成功后，手动验证双因素认证码.
 const validBind = () => {

@@ -1,12 +1,23 @@
 import axios from "~/http/request"
 
 // 登录
-export const loginReq = (data) => {
-    return axios({
-        url: "/user/login",
-        method: "post",
-        data
-    })
+export const loginReq = (data, entry) => {
+	const url = entry ? `/user/login/${entry}` : "/user/login";
+	return axios({
+		url,
+		method: "post",
+		data
+	})
+}
+
+// 校验安全登录入口
+export const validateLoginEntryReq = (entry) => {
+	const params = entry ? { entry } : {};
+	return axios({
+		url: "/user/login/entry/validate",
+		method: "get",
+		data: params
+	})
 }
 
 // 获取登录验证方式

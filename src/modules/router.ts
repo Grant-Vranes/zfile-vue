@@ -19,6 +19,13 @@ fileRoutes.push({
 });
 
 let routes = setupLayouts(fileRoutes);
+routes.unshift({
+  path: '/login/:entry',
+  meta: {
+    layout: 'default'
+  },
+  component: () => import('~/pages/login.vue')
+});
 routes.push({
   path: '/admin',
   redirect: '/admin/site-setting'
