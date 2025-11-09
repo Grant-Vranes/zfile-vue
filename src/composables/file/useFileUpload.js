@@ -757,19 +757,114 @@ export default function useFileUpload() {
     }
 
     const parseErrMessage = (err) => {
-        let errMsg = '';
-        if (err?.response?.data) {
-            if (err.response.data?.code && err.response.data?.msg) {
-                errMsg = `上传失败 ${err.response.data.code}: ${err.response.data.msg}`;
-            } else {
-                errMsg = err.response.data;
-            }
-        } else if (err?.name === 'AxiosError') {
-            errMsg = '上传失败: 网络错误或目标服务未允许跨域请求';
-        } else {
-            errMsg = err;
+        if (!err) {
+            return '上传失败: 未知错误';
         }
-        return errMsg;
+
+        const isAxiosErr = typeof axios?.isAxiosError === 'function' ? axios.isAxiosError(err) : err?.name === 'AxiosError';
+
+        const extractRequestOrigin = (config) => {
+            if (!config) {
+                return '';
+            }
+
+            const { url, baseURL } = config;
+
+            const resolveUrl = () => {
+                if (baseURL) {
+                    if (url?.startsWith('http')) {
+                        return url;
+                    }
+                    try {
+                        return new URL(url || '', baseURL).toString();
+                    } catch (_) {
+                        try {
+                            if (typeof window !== 'undefined') {
+                                return new URL(baseURL, window.location.origin).toString();
+                            }
+                        } catch (_) {
+                            return baseURL;
+                        }
+                    }
+                }
+
+                if (url?.startsWith('http')) {
+                    return url;
+                }
+
+                if (typeof window !== 'undefined') {
+                    try {
+                        return new URL(url || '', window.location.origin).toString();
+                    } catch (_) {
+                        return '';
+                    }
+                }
+
+                return '';
+            };
+
+            try {
+                const resolvedUrl = resolveUrl();
+                if (!resolvedUrl) {
+                    return '';
+                }
+                return new URL(resolvedUrl).origin;
+            } catch (_) {
+                return '';
+            }
+        };
+
+        if (isAxiosErr) {
+            const targetOrigin = extractRequestOrigin(err.config);
+
+            if (!err.response) {
+                const lowerMessage = err.message?.toLowerCase?.();
+                if (err.code === 'ERR_NETWORK' || lowerMessage?.includes('network error')) {
+                    return `上传失败: 浏览器拦截了跨域请求或目标服务不可达${targetOrigin ? ` (${targetOrigin})` : ''}，请检查存储服务的跨域配置或网络状态`;
+                }
+                return `上传失败: 网络异常或目标服务无响应${targetOrigin ? ` (${targetOrigin})` : ''}`;
+            }
+
+            const status = err.response?.status;
+            const statusText = err.response?.statusText;
+            const data = err.response?.data;
+
+            const context = [];
+            if (status) {
+                context.push(`HTTP ${status}${statusText ? ` ${statusText}` : ''}`);
+            }
+            if (targetOrigin) {
+                context.push(`target ${targetOrigin}`);
+            }
+
+            let detail = '';
+            if (data) {
+                if (typeof data === 'string') {
+                    detail = data;
+                } else if (typeof data === 'object') {
+                    if (data.code) {
+                        context.push(`code ${data.code}`);
+                    }
+                    detail = data.msg || data.message || data.error || '';
+                    if (!detail) {
+                        try {
+                            detail = JSON.stringify(data);
+                        } catch (_) {
+                            detail = '';
+                        }
+                    }
+                }
+            }
+
+            const contextStr = context.length ? ` (${context.join(', ')})` : '';
+            return `上传失败${contextStr}${detail ? `: ${detail}` : ''}`;
+        }
+
+        if (typeof err === 'string') {
+            return err;
+        }
+
+        return err?.message ? `上传失败: ${err.message}` : '上传失败';
     }
 
     // 通用上传结束设置.
