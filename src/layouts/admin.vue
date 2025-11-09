@@ -178,6 +178,7 @@ import {
   DocumentArrowDownIcon, TableCellsIcon, ArrowLeftOnRectangleIcon
 } from "@heroicons/vue/24/outline";
 import { logoutReq } from "~/api/home/user";
+import { loadConfigReq } from "~/api/admin/admin-setting";
 
 let router = useRouter();
 let route = useRoute();
@@ -210,23 +211,34 @@ const links = ref([
 const settings = ref([
   { id: 1, name: '用户管理', href: '/admin/user-list', icon: UsersIcon },
   { id: 2, name: '单点登录', href: '/admin/sso', icon: UserGroupIcon },
-  { id: 2, name: '安全设置', href: '/admin/security-setting', icon: ArrowRightOnRectangleIcon },
-  { id: 3, name: '访问控制', href: '/admin/access', icon: ShieldCheckIcon },
-  { id: 2, name: '登录日志', href: '/admin/login-log', icon: DocumentTextIcon },
-  { id: 4, name: '系统日志下载', href: '#', icon: DocumentArrowDownIcon, onClick: logDownload },
-  { id: 5, name: '注销登录', href: '#', icon: ArrowLeftOnRectangleIcon, onClick: () => {
-			logoutReq().then(res => {
-				router.push('/login');
-				if (siteSetting.value.secureLoginEntry) {
-					router.push('/login/' + siteSetting.value.secureLoginEntry);
-				} else {
-					router.push('/login');
-				}
-			})
-    }
-  }
+  { id: 3, name: '安全设置', href: '/admin/security-setting', icon: ArrowRightOnRectangleIcon },
+  { id: 4, name: '访问控制', href: '/admin/access', icon: ShieldCheckIcon },
+  { id: 5, name: '登录日志', href: '/admin/login-log', icon: DocumentTextIcon },
+  { id: 6, name: '系统日志下载', href: '#', icon: DocumentArrowDownIcon, onClick: logDownload },
+	{ id: 7, name: '注销登录', href: '#', icon: ArrowLeftOnRectangleIcon, onClick: () => {
+			const secureEntryPromise = loadConfigReq().then(res => {
+				siteSetting.value = res.data;
+				return res.data.secureLoginEntry;
+			});
+
+			logoutReq().then(() => {
+				secureEntryPromise.then(entry => {
+					redirectToLogin(entry);
+				}).catch(() => {
+					redirectToLogin(siteSetting.value && siteSetting.value.secureLoginEntry);
+				});
+			});
+		}
+	}
 ])
 
+const redirectToLogin = (entry) => {
+	if (entry) {
+		router.push('/login/' + entry);
+	} else {
+		router.push('/login');
+	}
+};
 
 const openHomePage = () => {
   if (siteSetting.value.siteAdminLogoTargetMode === '_self') {
