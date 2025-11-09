@@ -8,13 +8,11 @@
 				</div>
 			</slot>
 		</template>
-    <template #header>
-      <slot name="header" :column="props">
-        <div>
-          {{ props.label }}
-        </div>
-      </slot>
-    </template>
+		<template #header>
+			<slot name="header" :column="props">
+				{{ props.label }}
+			</slot>
+		</template>
 	</el-table-column>
 	<div class="w-full" v-else>
 		<slot :row="props.scope.row" :$index="props.scope.$index">

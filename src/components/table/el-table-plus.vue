@@ -1,6 +1,6 @@
 <template>
 	<el-table ref="elTableRef" v-bind="props" @sort-change="attr.onSortChange" :data="props.data" :row-key="props.rowKey"
-			  @selection-change="selectionChange" :border="props.border" v-if="isNotMobile">
+						@selection-change="selectionChange" :border="props.border" v-if="isNotMobile">
 		<slot></slot>
 	</el-table>
 	<div class="h-full w-full overflow-auto" v-else>
@@ -8,7 +8,7 @@
 			<el-card shadow="never">
 				<el-form label-position="top">
 					<el-checkbox v-model="item['_checked']" label="选中" @change="handleSelectionChange"
-								 v-if="isNeedSelection" />
+											 v-if="isNeedSelection" />
 					<template v-for="citem in $slots['default']()" :key="citem">
 						<template v-if="citem.props">
 							<template v-if="citem.props.type === 'index'">
@@ -18,9 +18,15 @@
 							<template v-else-if="citem.props.type === 'selection'">
 							</template>
 							<el-form-item :label="citem.props.label">
+								<template v-if="hasHeaderSlot(citem)" #label>
+									<MobileHeaderRenderer :column-v-node="citem" />
+								</template>
 								<template v-if="citem && citem.children">
-									<component :is="citem" :scope="{ row: item, $index: i }"
-											   :prop="citem.props.prop"></component>
+									<component
+										:is="citem"
+										:scope="{ row: item, $index: i }"
+										:prop="citem.props.prop"
+									></component>
 								</template>
 								<template v-else>
 									<component :is="citem" :scope="{ row: item, $index: i }"></component>
@@ -36,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { defineComponent } from "vue";
 import { isNotMobile } from "~/utils";
 import { ElTable, ElCard, ElForm, ElFormItem, ElDivider, ElCheckbox, TableProps } from "element-plus";
 import 'element-plus/es/components/table/style/css'
@@ -73,6 +80,31 @@ const props = withDefaults(defineProps<TableProps<any> & { customAttr?: string }
 const attr = useAttrs();
 const slots = useSlots();
 const emit = defineEmits()
+
+const hasHeaderSlot = (columnVNode: any) => {
+	return typeof columnVNode?.children?.header === "function";
+};
+
+const MobileHeaderRenderer = defineComponent({
+	name: "MobileHeaderRenderer",
+	props: {
+		columnVNode: {
+			type: Object,
+			required: true
+		}
+	},
+	setup(props) {
+		return () => {
+			const headerSlot = props.columnVNode?.children?.header;
+			if (typeof headerSlot !== "function") {
+				return props.columnVNode?.props?.label ?? "";
+			}
+			return headerSlot({
+				column: props.columnVNode.props
+			});
+		};
+	}
+});
 
 const selectionChange = (selection: any[]) => {
 	emit("selectionChange", selection);
