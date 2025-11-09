@@ -29,6 +29,16 @@ export const getServerAddressReq = () => {
 	})
 }
 
+export const getServerHeadersReq = () => {
+	return axios({
+		url: "/admin/headers",
+		method: "get",
+		config: {
+			showDefaultMsg: false,
+		}
+	})
+}
+
 // ------------------显示设置------------------
 export const updateViewSettingReq = (data) => {
     return axios({

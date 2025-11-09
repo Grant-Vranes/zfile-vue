@@ -35,7 +35,24 @@
 				<br>
 				<div v-if="frontDetectServerAddress !== serverAddress">
 					<span class="text-red-500">注意: 自动检测到的后端地址 <span class="text-blue-500">{{ serverAddress }}</span> 似乎有异常，如果使用了反向代理请检查相关配置，参考:
-						<a href="https://docs.zfile.vip/question/nginx-proxy-config" target="_blank">Nginx 反向代理配置</a>
+						<a href="https://docs.zfile.vip/question/nginx-proxy-config" class="text-blue-500" target="_blank">Nginx 反向代理配置</a>
+						<el-popover placement="right" :width="400" trigger="click">
+							<template #reference>
+								<span v-show="serverHeaders">
+									或点击
+									<span class="text-blue-500 text-sm">查看服务器头信息</span>
+									辅助诊断问题
+								</span>
+							</template>
+						<div class="text-sm h-96 overflow-auto">
+							<!--浮动在右侧的复制按钮-->
+							<i-mdi-content-copy
+								class="absolute top-2 right-8 w-5 h-5 cursor-pointer text-gray-500 hover:text-gray-800"
+								@click="copyServerHeaders"
+							/>
+							<pre class="whitespace-pre-wrap break-all">{{ serverHeaders }}</pre>
+						</div>
+					</el-popover>
 					</span>
 				</div>
 			</div>
@@ -158,13 +175,14 @@
 </template>
 
 <script setup>
+import { toClipboard } from "@soerenmartius/vue3-clipboard";
 import { DocumentTextIcon, LinkIcon, CheckBadgeIcon, ShieldCheckIcon, HomeIcon, PhotoIcon, ExclamationTriangleIcon } from "@heroicons/vue/24/solid";
 
 import { CloudArrowUpIcon } from "@heroicons/vue/24/outline";
 import { fileToBase64 } from "~/utils";
 
 import { getUserListReq } from "~/api/admin/admin-user";
-import { getServerAddressReq, updateSiteSettingReq } from "~/api/admin/admin-setting";
+import { updateSiteSettingReq, getServerAddressReq, getServerHeadersReq } from "~/api/admin/admin-setting";
 
 import useGlobalConfigStore from "~/stores/global-config";
 let globalConfigStore = useGlobalConfigStore();
@@ -225,6 +243,7 @@ watch(() => siteSettingLoading.value, (newVal, oldValue) => {
 onMounted(() => {
     checkAdminStoragePermission();
 	loadServerAddress();
+	loadServerHeaders();
 });
 
 const router = useRouter();
@@ -278,6 +297,23 @@ const loadServerAddress = () => {
 		console.error("获取服务器地址失败:", error);
 	});
 };
+
+const serverHeaders = ref("");
+const loadServerHeaders = () => {
+	getServerHeadersReq().then((response) => {
+		serverHeaders.value = response.data;
+	}).catch((error) => {
+		console.error("获取服务器头信息失败:", error);
+	});
+};
+const copyServerHeaders = () => {
+	toClipboard(serverHeaders.value).then(() => {
+		ElMessage.success("已复制到剪贴板");
+	}).catch(() => {
+		ElMessage.error("复制失败，请手动复制");
+	});
+};
+
 
 const frontDetectServerAddress = computed(() => {
 	let address = (globalConfigStore.serverAddress);
