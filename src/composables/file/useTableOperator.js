@@ -22,7 +22,7 @@ import useFileOperator from "~/composables/file/useFileOperator";
 let { batchDelete } = useFileOperator();
 
 import useFileData from "~/composables/file/useFileData";
-const { openRow } = useFileData();
+const { openRow: openRowDefault } = useFileData();
 
 import useFileLoading from "~/composables/file/useFileLoading";
 const { skeletonLoading } = useFileLoading();
@@ -97,10 +97,10 @@ watch(() => pressed.value, (value, oldValue) => {
 
 let tableClickRow;
 
-export default function useTableOperator() {
+export function buildTableOperator(openRow) {
 
     // 文件单击事件
-    tableClickRow = (row, event) => {
+    const tableClickRow = (row, event) => {
         if (event === undefined) {
             openRow(row);
             return;
@@ -204,4 +204,8 @@ export default function useTableOperator() {
         tableClickRow, tableDbClickRow,
         tableHoverRow, tableLeaveRow
     }
+}
+
+export default function useTableOperator() {
+    return buildTableOperator(openRowDefault);
 }

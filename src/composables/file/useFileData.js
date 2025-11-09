@@ -13,7 +13,7 @@ import useRouterData from "~/composables/useRouterData";
 let { routerRef, fullpath, storageKey, currentPath } = useRouterData()
 
 import useFilePwd from "~/composables/file/useFilePwd";
-let { getPathPwd, putPathPwd } = useFilePwd();
+let { getPathPwd, putPathPwd, popPassword } = useFilePwd();
 
 import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
 const { storageListAsFileList } = useHeaderStorageList();
@@ -231,37 +231,12 @@ export default function useFileData() {
     }
 
 
-    // ------------- folder password start ------------
-
-
-    // 显示密码输入框
-    let popPassword = (onConfirm, onCancel) => {
-        // 如果输入了密码, 则写入到 sessionStorage 缓存中, 并重新调用加载文件.
-        MessageBox.prompt('此文件夹已加密，请输入密码：', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            inputType: 'password',
-            checkbox: true,
-            defaultChecked: storageConfigStore.globalConfig.defaultSavePwd,
-            inputDefault: getPathPwd(null, true),
-            checkboxLabel: '记住密码',
-            inputValidator(val) {
-                return !!val
-            },
-            inputErrorMessage: '密码不能为空.'
-        }).then(({value, checkbox}) => {
-            onConfirm && onConfirm(value, checkbox);
-        }).catch(() => {
-            onCancel && onCancel();
-        });
-    }
-
-    // ------------- folder password end   ------------
+    // ------------- folder password handled by useFilePwd  ------------
 
     return {
         loadFile, openRow, searchParam, sortChangeMethod,
         skeletonLoading, skeletonData, basicLoading, loading,
-        loadFileConfig, popPassword
+        loadFileConfig
     }
 
 }

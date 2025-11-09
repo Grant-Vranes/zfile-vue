@@ -203,7 +203,8 @@ const navigation = ref([
 const links = ref([
   { id: 1, name: '直/短链设置', href: '/admin/download-link/setting', icon: Cog8ToothIcon },
   { id: 2, name: '短链管理', href: '/admin/download-link', icon: TableCellsIcon },
-  { id: 3, name: '下载日志', href: '/admin/download-link/log', icon: DocumentTextIcon },
+  { id: 3, name: '分享列表', href: '/admin/share-link', icon: TableCellsIcon },
+  { id: 4, name: '下载日志', href: '/admin/download-link/log', icon: DocumentTextIcon },
 ])
 
 const settings = ref([

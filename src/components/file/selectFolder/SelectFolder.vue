@@ -45,14 +45,10 @@ import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
 import useFilePwd from "~/composables/file/useFilePwd";
-let { getPathPwd, putPathPwd } = useFilePwd();
+let { getPathPwd, putPathPwd, popPassword } = useFilePwd();
 
 import useFileOperator from "~/composables/file/useFileOperator";
 const { newFolder } = useFileOperator();
-
-
-import useFileData from "~/composables/file/useFileData";
-let { popPassword } = useFileData();
 
 const onNewFolder = () => {
   newFolder(selectPath.value).then(() => {

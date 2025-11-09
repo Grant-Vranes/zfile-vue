@@ -74,6 +74,7 @@ export default function useFileSelect() {
     let selectFilesLength = selectFiles.value.length;
     let selectFoldersLength = selectFolders.value.length;
 
+	let isSelected = selectRowsLength > 0;
     let isSingleSelect = selectRowsLength === 1;
     let isMultiSelect = selectRowsLength > 1;
     let isAllFile = selectFilesLength === selectRowsLength;
@@ -82,6 +83,7 @@ export default function useFileSelect() {
     let isSingleSelectFolder = isSingleSelect && selectFoldersLength === 1;
 
     return {
+      isSelected,
       isSingleSelect,
       isMultiSelect,
       isAllFile,

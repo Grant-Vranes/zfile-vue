@@ -45,6 +45,9 @@
 			<GenerateLink v-if="generateLinkDialogVisible" />
 			<GenerateLinkResult />
 
+			<!-- 创建分享 -->
+			<CreateShareDialog ref="createShareDialogRef" />
+
 			<!-- 上传框 -->
 			<ZUpload @close="loadFile" />
 
@@ -74,6 +77,7 @@ import { isMobile } from "~/utils";
 import CardReadme from "~/components/file/readme/CardReadme.vue";
 import DialogReadme from "~/components/file/readme/DialogReadme.vue";
 import BatchOperatorResult from "~/components/file/BatchOperatorResult.vue";
+import CreateShareDialog from "~/components/file/CreateShareDialog.vue";
 const FileGallery = defineAsyncComponent(() => import("~/components/file/preview/FileGallery.vue"))
 
 // 业务代码
@@ -107,11 +111,21 @@ import CardFileView from "~/components/file/view/CardFileView.vue";
 import {loadUserRootPathReq} from "~/api/home/home";
 const { generateLinkDialogVisible } = useFileLink();
 
+// 分享
+import useFileShare from "~/composables/file/useFileShare";
+const { setCreateShareDialogRef } = useFileShare();
+const createShareDialogRef = ref();
+
 // 初始化时，加载文件列表
 onBeforeMount(() => {
 	loadUserRootPath().then(() => {
 		loadFile({ init: true});
 	})
+})
+
+// 设置分享对话框引用
+onMounted(() => {
+	setCreateShareDialogRef(createShareDialogRef);
 })
 
 // 切换存储源或路径时，重新加载文件列表

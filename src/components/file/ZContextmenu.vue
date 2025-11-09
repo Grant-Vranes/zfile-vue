@@ -51,6 +51,11 @@
 					<i-mdi-link-plus class="contextmenu-icon" />
 					<label>同时获取</label>
 				</ContextmenuItem>
+				<ContextmenuItem v-show="storageConfigStore.permission.createShareLink && (selectStatistics.isSingleSelect || selectStatistics.isMultiSelect)"
+								 @click="openCreateShareDialog">
+					<i-mdi-share-variant class="contextmenu-icon" />
+					<label>创建分享</label>
+				</ContextmenuItem>
 			</div>
 
 			<div class="contextmenu-group-item">
@@ -109,6 +114,7 @@ import useFileData from "~/composables/file/useFileData";
 import useFileSelect from "~/composables/file/useFileSelect";
 import useFileOperator from "~/composables/file/useFileOperator";
 import useFileLink from "~/composables/file/useFileLink";
+import useFileShare from "~/composables/file/useFileShare";
 import useFileUpload from "~/composables/file/useFileUpload";
 
 import useStorageConfigStore from "~/stores/storage-config";
@@ -119,6 +125,7 @@ const { openKkFileView } = useFilePreview();
 const { selectRow, selectRows, selectStatistics } = useFileSelect();
 const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = useFileOperator();
 const { openGenerateLinkDialog } = useFileLink();
+const { openCreateShareDialog } = useFileShare();
 const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
 
 const contextmenu = ref();

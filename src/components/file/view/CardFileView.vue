@@ -38,9 +38,15 @@ const { basicLoading } = useFileLoading();
 import useFileSelect from "~/composables/file/useFileSelect";
 let { initSelectFun, selectRowsChange, tableRowClassName } = useFileSelect();
 
+// 分享模式
+const props = defineProps({
+  shareMode: { type: Boolean, default: false }
+});
+
 // 文件操作
 import useTableOperator from "~/composables/file/useTableOperator";
-const { tableClickRow, tableDbClickRow } = useTableOperator();
+import useShareTableOperator from "~/composables/file/useShareTableOperator";
+const { tableClickRow, tableDbClickRow } = props.shareMode ? useShareTableOperator() : useTableOperator();
 
 import useFileContextMenu from "~/composables/file/useFileContextMenu";
 const { showFileMenu } = useFileContextMenu();

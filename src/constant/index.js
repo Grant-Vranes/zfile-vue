@@ -182,7 +182,7 @@ let region = {
   ]
 }
 
-const systemNames = ['admin', 'user', 'file', 'login', 'install', 's', 'onedrive', 'api', 'sharepoint', 's3', 'webdav', 'pd', 'gd', 'onlyOffice', '401', '403', '404', '500', 'guest'];
+const systemNames = ['admin', 'user', 'file', 'login', 'install', 's', 'share', 'onedrive', 'api', 'sharepoint', 's3', 'webdav', 'pd', 'gd', 'onlyOffice', '401', '403', '404', '500', 'guest'];
 const disableUrlChars = ['+', ' ', '/', '?', '%', '=', '&', '#']
 
 export const constant = {

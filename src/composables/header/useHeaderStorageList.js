@@ -12,7 +12,7 @@ import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
 import useRouterData from "~/composables/useRouterData";
-let { routerRef, fullpath, storageKey } = useRouterData();
+let { routerRef, fullpath, storageKey, routeRef } = useRouterData();
 
 let storageList = ref([]);
 let currentStorageKey = ref();
@@ -57,6 +57,10 @@ export default function useHeaderStorageList() {
 
     // 如果路由处理根目录的操作.
     const rootPathAction = (rootShowStorage) => {
+        // 在分享页面不干预文件列表（避免覆盖分享文件列表为存储源列表）
+        if (routeRef.value?.path?.startsWith('/share')) {
+            return;
+        }
         // 如果当前 URL 参数中有存储源 ID, 则直接用当前的.
         if (storageKey.value) {
             // 判断 url 中的 storageKey 是否存在于 storageList 中. 如果不存在, 则跳转到首页

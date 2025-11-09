@@ -55,6 +55,15 @@
                     </div>
                 </el-tooltip>
 
+                <el-tooltip v-if="storageConfigStore.loginInfo.isLogin" placement="bottom">
+                    <template #content>
+                        我的分享
+                    </template>
+                    <div @click="openMyShare">
+                        <i-mdi-share-variant class="w-6 h-6 text-gray-500 hover:text-blue-500" />
+                    </div>
+                </el-tooltip>
+
                 <!-- 上传 -->
                 <el-dropdown v-if="route.params.storageKey && (storageConfigStore.permission.upload || storageConfigStore.permission.newFolder)"
                              trigger="click"
@@ -103,8 +112,8 @@
 
             </div>
 
-            <!-- 存储源选择 -->
-            <div class="zfile-header-storage-select" v-if="isNotMobile">
+            <!-- 存储源选择（分享页不显示） -->
+            <div class="zfile-header-storage-select" v-if="isNotMobile && !isSharePage">
                 <el-select size="default" v-model="currentStorageKey" placeholder="请选择存储源">
                     <el-option v-for="item in storageList"
                                :key="item.key"
@@ -154,6 +163,10 @@
                         <div class="border-gray-200 border-t"></div>
 
                         <template v-if="storageConfigStore.loginInfo.isLogin">
+                            <el-dropdown-item @click="openMyShare">
+                                <i-mdi-share-variant class="w-4 h-4 mr-2 text-gray-500" name="share" />
+                                我的分享
+                            </el-dropdown-item>
                             <el-dropdown-item @click="toAdmin" v-if="storageConfigStore.loginInfo.isAdmin">
                                 <i-mdi-account-settings-variant class="w-4 h-4 mr-2 text-gray-500" name="admin" />
                                 前往后台
@@ -181,6 +194,11 @@
 
     <update-pwd ref="updatePwdDialogRef" />
     <update-user-name-and-pwd ref="resetAdminPwdDialogRef" />
+    <MyShareDialog
+        v-model:visible="myShareDialogVisible"
+        :storage-list="storageList"
+        :active-storage-key="shareActiveStorageKey"
+    />
 </template>
 
 <script setup>
@@ -272,6 +290,7 @@ if (storageConfigStore.globalConfig.customCss) {
 import HeaderLogo from "~/components/file/HeaderLogo.vue";
 import { checkLoginReq, logoutReq } from "~/api/home/user";
 import UpdateUserNameAndPwd from "~/components/user/UpdateUserNameAndPwd.vue";
+const MyShareDialog = defineAsyncComponent(() => import("~/components/share/MyShareDialog.vue"));
 
 const loadScriptDom = (scriptDom) => {
     if (scriptDom) {
@@ -332,6 +351,13 @@ const logout = () => {
 
 const toAdmin = () => {
     router.push("/admin/site-setting");
+};
+
+const isSharePage = computed(() => !!route.params.shareKey);
+const shareActiveStorageKey = computed(() => route.params.storageKey ? String(route.params.storageKey) : "");
+const myShareDialogVisible = ref(false);
+const openMyShare = () => {
+    myShareDialogVisible.value = true;
 };
 </script>
 

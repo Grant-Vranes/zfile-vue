@@ -97,7 +97,8 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
         newFolder: originPermission.newFolder,
         batchDownload: download && originPermission.batchDownload,
         packageDownload: download && originPermission.packageDownload,
-
+        createShareLink: originPermission.createShareLink,
+        customShareKey: originPermission.customShareKey
       }
     }
   },

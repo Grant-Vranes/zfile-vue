@@ -123,7 +123,7 @@ let fileDataStore = useFileDataStore();
 
 // 文件数据相关
 import useFileData from "~/composables/file/useFileData";
-const { sortChangeMethod, skeletonData } = useFileData();
+const { sortChangeMethod: defaultSortChangeMethod, skeletonData } = useFileData();
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
@@ -144,9 +144,22 @@ onMounted(() => {
   );
 });
 
+// 分享模式
+const props = defineProps({
+  shareMode: { type: Boolean, default: false }
+});
+
+// 分享页排序处理
+import useShareData from "~/composables/share/useShareData";
+const { sortShareChangeMethod } = useShareData();
+
+// 绑定表格排序回调：分享页使用分享排序，其它页使用默认排序
+const sortChangeMethod = props.shareMode ? sortShareChangeMethod : defaultSortChangeMethod;
+
 // 文件操作
 import useTableOperator from "~/composables/file/useTableOperator";
-const { tableClickRow, tableDbClickRow, tableHoverRow, tableLeaveRow } = useTableOperator();
+import useShareTableOperator from "~/composables/file/useShareTableOperator";
+const { tableClickRow, tableDbClickRow, tableHoverRow, tableLeaveRow } = props.shareMode ? useShareTableOperator() : useTableOperator();
 
 import useFileContextMenu from "~/composables/file/useFileContextMenu";
 const { showFileMenu } = useFileContextMenu();

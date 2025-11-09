@@ -4,7 +4,7 @@ import useFileSelect from "~/composables/file/useFileSelect";
 const { selectRows, clearSelection, toggleRowSelection } = useFileSelect();
 
 import useRouterData from "~/composables/useRouterData";
-let { storageKey } = useRouterData();
+let { storageKey, routeRef } = useRouterData();
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
@@ -17,7 +17,9 @@ let contextmenuRef;
 export default function useFileContextMenu() {
 
     const showFileMenu = (row, column, event) => {
-        if (!storageKey.value) {
+        // 在文件页需要存储源 key；在分享页（/share/:shareKey）允许无 storageKey
+        const inShare = !!routeRef.value.params?.shareKey;
+        if (!inShare && !storageKey.value) {
             return;
         }
 
