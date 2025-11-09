@@ -18,6 +18,7 @@
 			<div class="el-form-item-tips">
 				<div>当前登录入口为 <span class="text-blue-400 select-all">{{currentLoginEntry}}</span></div>
 				<div>此功能可保护站点登录入口不被恶意扫描，建议启用。</div>
+				<div>如忘记可在服务启动日志中查看，如："注册安全登录入口成功，当前登录路径为: /login"</div>
 			</div>
 		</el-form-item>
 
